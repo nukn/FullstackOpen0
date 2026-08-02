@@ -1,8 +1,20 @@
 import { useState } from 'react'
 
+const StatisticsLine = (props) => {
+  return (
+    <p>{props.text} {props.value}</p>
+  )
+}
+
+const Button = (props) => {
+  return (
+    <button onClick={props.onClick}>{props.text}</button>
+  )
+}
+
+
 
 const Statistics = (props) => {
-
   if (props.total === 0) {
     return (
       <div>
@@ -14,19 +26,18 @@ const Statistics = (props) => {
 
   return (
     <div>
-    <h2>statistics</h2>
-        good {props.good} <br/>
-        neutral {props.neutral} <br/>
-        bad {props.bad} <br/>
-      <br/>
-      total votes {props.total} <br/>
-      average {props.average} <br/>
-      positive {props.positive}% <br/>
-
-
+      <h2>statistics</h2>
+      <StatisticsLine text="good" value={props.good} />
+      <StatisticsLine text="neutral" value={props.neutral} />
+      <StatisticsLine text="bad" value={props.bad} />
+      <StatisticsLine text="all" value={props.total} />
+      <StatisticsLine text="average" value={props.average} />
+      <StatisticsLine text="positive" value={props.positive + " %"} />
     </div>
   )
 }
+
+
 
 const App = () => {
   const [good, setGood] = useState(0)
@@ -36,25 +47,19 @@ const App = () => {
   const total = good + neutral + bad
   const average = total === 0 ? 0 : (good - bad) / total
   const positive = total === 0 ? 0 : (good / total) * 100
-  
 
   return (
     <div>
       <h1>give feedback</h1>
 
-      <button onClick={()=> setGood(good +1)}>good</button> 
-      <button onClick={()=> setNeutral(neutral +1)}>neutral</button> 
-      <button onClick={()=> setBad(bad +1)}>bad</button>
+      <Button onClick={() => setGood(good + 1)} text="good" />
+      <Button onClick={() => setNeutral(neutral + 1)} text="neutral" />
+      <Button onClick={() => setBad(bad + 1)} text="bad" />
 
-
-
-    <Statistics 
-    good={good} bad={bad} neutral={neutral}
-    total={total} average={average} positive={positive}
-    />
-
-
-
+      <Statistics
+        good={good} bad={bad} neutral={neutral}
+        total={total} average={average} positive={positive}
+      />
     </div>
   )
 }
