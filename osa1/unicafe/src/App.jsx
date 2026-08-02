@@ -2,9 +2,18 @@ import { useState } from 'react'
 
 
 const Statistics = (props) => {
+
+  if (props.total === 0) {
+    return (
+      <div>
+        <h2>statistics</h2>
+        <p>No feedback given.</p>
+      </div>
+    )
+  }
+
   return (
     <div>
-
     <h2>statistics</h2>
         good {props.good} <br/>
         neutral {props.neutral} <br/>
