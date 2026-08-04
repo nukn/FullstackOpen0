@@ -1,11 +1,46 @@
 import { useState } from 'react'
 
+const PersonForm = (props) => {
+  return (
+    <form onSubmit={props.onSubmit}>
+      <div>
+        name: <input value={props.newName} onChange={props.nameChange}/>
+      </div>
+      <div>
+        number: <input value={props.newNumber} onChange={props.numberChange}/>
+      </div>
+      <div>
+        <button type="submit">add</button>
+      </div>
+    </form>
+  )
+}
+
+
+const Persons = (props) => {
+  return(
+       <ul>
+        {props.persons.map(person => 
+
+          <Person key={person.name} person={person} />
+        )}
+      </ul>
+  )
+}
+
+const Person = (props) => {
+  return(
+  <li>{props.person.name}: {props.person.number}</li>
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([
-    { name: 'Arto Hellas' }
+    { name: 'Arto Hellas', number: '12345'}
   ]) 
 
   const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
 
 
   const addName = (event) => {
@@ -18,36 +53,40 @@ const App = () => {
     }
 
     const nameObject = {
-      name: newName
+      name: newName,
+      number: newNumber
     }
 
     setPersons(persons.concat(nameObject))
     setNewName('')
-
+    setNewNumber('')
   }
 
   const handleNameChange = (event) => {
-    console.log(event.target.value)
+    //console.log(event.target.value)
     setNewName(event.target.value)
   }
+
+  const handleNumberChange = (event) => {
+    //console.log(event.target.value)
+    setNewNumber(event.target.value)
+  }
+
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <form onSubmit={addName}>
-        <div>
-          name: <input value={newName} onChange={handleNameChange}/>
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+
+
+ <h3>Add a new contact</h3>
+      <PersonForm 
+        onSubmit={addName} newName={newName} nameChange={handleNameChange} 
+        newNumber={newNumber} numberChange={handleNumberChange}
+      />
+
       <h2>Numbers</h2>
-       <ul>
-        {persons.map(person => 
-          <li key={person.name}>{person.name}</li>
-        )}
-      </ul>
+      <Persons persons={persons}/>
+
     </div>
   )
 
