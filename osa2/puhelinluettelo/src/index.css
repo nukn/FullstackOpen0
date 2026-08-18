@@ -1,0 +1,26 @@
+.name {
+ 
+  font-style: italic;
+  
+}
+
+.deleteButton {
+
+    color: rgb(238, 159, 159);
+    border: 0;
+    background: none;
+   
+}
+
+
+.error {
+  color: red;
+  background: rgb(238, 223, 223);
+  font-size: 20px;
+  text-align: center;
+  border-style:dotted;
+border-width: 2px;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 10px;
+}

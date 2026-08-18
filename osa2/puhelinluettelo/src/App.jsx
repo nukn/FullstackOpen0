@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import nameService from './services/persons'
+import Notification from './components/Notification'
 
 
 const Filter = (props) => {
@@ -34,7 +35,10 @@ const Persons = (props) => {
        <ul>
         {props.persons.map(person => 
 
-          <Person key={person.name} person={person} />
+          <Person key={person.id} person={person} 
+          onDelete={() => props.onDelete(person.id, person.name)}
+          />
+
         )}
       </ul>
   )
@@ -42,9 +46,14 @@ const Persons = (props) => {
 
 const Person = (props) => {
   return(
-  <li>{props.person.name}: {props.person.number}</li>
+  <li className='name'>{props.person.name}: {props.person.number}
+     <button className='deleteButton' onClick={props.onDelete}>x</button>
+  </li>
   )
 }
+
+
+
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
@@ -52,24 +61,30 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [search, setSearch] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
+
+    nameService
+      .getAll()
       .then(response => {
-        console.log('promise fulfilled')
         setPersons(response.data)
       })
   }, [])
+
   console.log('render', persons.length, 'persons')
 
+
+  
   const addName = (event) => {
     event.preventDefault()
 
     const nameExists = persons.some(person => person.name === newName)
     if (nameExists) {
-      alert(`${newName} is already added to phonebook`)
+      setErrorMessage(`${newName} is already added to phonebook`)
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
       return
     }
 
@@ -78,15 +93,19 @@ const App = () => {
       number: newNumber
     }
 
-    axios
-    .post('http://localhost:3001/persons', nameObject)
+    nameService
+    .create(nameObject)
     .then(response => {
       console.log(response)
+        setPersons(persons.concat(response.data))
+        setNewName('')
+        setNewNumber('')
+        setErrorMessage(`Added ${response.data.name}`)
+        setTimeout(() => {
+          setErrorMessage(null)
+        },5000)
+    
     })
-
-    setPersons(persons.concat(nameObject))
-    setNewName('')
-    setNewNumber('')
   }
 
 
@@ -110,11 +129,23 @@ const App = () => {
   person.name.toLowerCase().includes(search.toLowerCase())
   )
 
+  const handleDelete = (id, name) => {
+  if (window.confirm(`Delete ${name}?`)) {
+    nameService
+      .remove(id)
+      .then(() => {
+        setPersons(persons.filter(person => person.id !== id))
+      })
+  }
+}
+
 
 
   return (
     <div>
       <h2>Phonebook</h2>
+
+  <Notification message={errorMessage} />
 
   <Filter   search={search} onChange={handleSearchChange}/>
 
@@ -125,7 +156,7 @@ const App = () => {
       />
 
       <h2>Numbers</h2>
-      <Persons persons={filteredPersons}/>
+      <Persons persons={filteredPersons} onDelete={handleDelete} />
 
     </div>
   )
